@@ -19,7 +19,15 @@ def findStartSmoothPoint(points, start, end):
         mid = int( (start+end)/2)
         A = (points[0][mid] - points[0][end], points[1][mid] - points[1][end])
         B = (points[0][start]- points[0][end], points[1][start]- points[1][end])
-        angle = math.acos(((A[0] * B[0] + A[1] * B[1]) * 1.0) / (math.sqrt(A[0] ** 2 + A[1] ** 2) * math.sqrt(B[0] ** 2 + B[1] ** 2)))
+        #print(A)
+        #print(B)
+        r = ((A[0] * B[0] + A[1] * B[1]) * 1.0) / (math.sqrt(A[0] ** 2 + A[1] ** 2) * math.sqrt(B[0] ** 2 + B[1] ** 2))
+        if( r < 0 and math.fabs(r) > 1.0):
+            angle = math.pi
+        elif (r > 0 and math.fabs(r) > 1.0):
+            angle = 0.0
+        else:
+            angle = math.acos(((A[0] * B[0] + A[1] * B[1]) * 1.0) / (math.sqrt(A[0] ** 2 + A[1] ** 2) * math.sqrt(B[0] ** 2 + B[1] ** 2)))
         if(angle*180/math.pi < 1.0):
             return start
         if(start < end):
@@ -86,7 +94,7 @@ for data in pos:
         truthPos.append(data)
     initPos = data
 #error 1 3
-point = truthPos[3]
+point = truthPos[9]
 detailInfo = {"intersection":point}
 info = []
 j = 0
@@ -121,16 +129,18 @@ for i in range(1, len(info)):
         tmp.append( info[i] )
         if(len(tmp) == detailInfo["intersection"][2]):
             break
+
 '''
-plt.plot([ info[2][1][1] ], [ info[2][1][0] ], "go", markersize = 1)
-plt.plot([ info[0][1][1] ], [ info[0][1][0] ], "go", markersize = 1)
-plt.plot([ info[1][1][1] ], [ info[1][1][0] ], "go", markersize = 1)
-plt.plot([ info[3][1][1] ], [ info[3][1][0] ], "go", markersize = 1)
-plt.plot([ info[4][1][1] ], [ info[4][1][0] ], "go", markersize = 1)
-'''
+plt.plot([ info[2][1][1] ], [ info[2][1][0] ], "go", markersize = 3)
+plt.plot([ info[0][1][1] ], [ info[0][1][0] ], "go", markersize = 3)
+plt.plot([ info[1][1][1] ], [ info[1][1][0] ], "go", markersize = 3)
+plt.plot([ info[3][1][1] ], [ info[3][1][0] ], "go", markersize = 3)
+plt.plot([ info[4][1][1] ], [ info[4][1][0] ], "go", markersize = 3)
+
 plt.plot([ tmp[2][1][1] ], [ tmp[2][1][0] ], "go", markersize = 1)
 plt.plot([ tmp[0][1][1] ], [ tmp[0][1][0] ], "go", markersize = 2)
 plt.plot([ tmp[1][1][1] ], [ tmp[1][1][0] ], "go", markersize = 3)
+'''
 
 #info = info[:detailInfo["intersection"][2]]
 info = tmp
@@ -159,8 +169,8 @@ for data in info:
     A = (start[0]-min_point[0], start[1]-min_point[1])
     B = (end[0]-min_point[0], end[1]-min_point[1])
 
-    print(A)
-    print(B)
+    #print(A)
+    #print(B)
     ang = math.acos(((A[0] * B[0] + A[1] * B[1]) * 1.0) / (math.sqrt(A[0] ** 2 + A[1] ** 2) * math.sqrt(B[0] ** 2 + B[1] ** 2)) + 0.001)
     if(angle > ang):
         angle = ang
@@ -173,12 +183,13 @@ detailInfo["contours"] = { max_index:{"start":start, "end":end}}
 
 print(max_index)
 print(start, end, info[max_index][3])
-'''
+
 point_index = detailInfo["contours"][max_index]["start"]
 xx = points[info[max_index][2]][0][point_index]
 yy = points[info[max_index][2]][1][point_index]
-plt.plot( [ yy ],  [xx], "bo", markersize = 1)
-'''
+plt.plot( [ yy ],  [xx], "ro", markersize = 3)
+
+
 #plt.plot( points[5][1], points[5][0], "bo", markersize = 1)
 
 #先把end点求出
@@ -208,7 +219,7 @@ print(contour_index)
 print(point_index)
 xx = points[info[contour_index][2]][0][point_index]
 yy = points[info[contour_index][2]][1][point_index]
-#plt.plot( [ yy ],  [xx], "go", markersize = 1)
+plt.plot( [ yy ],  [xx], "go", markersize = 1)
 
 if(point_index < info[contour_index][3] ):
     detailInfo["contours"][contour_index] = {"start":point_index}
@@ -219,6 +230,7 @@ main_index = max_index
 pointIndex = start
 # 4 1 0
 print( info[main_index][2])
+fff = 1
 
 while(1):
     minValue = 100000
@@ -244,7 +256,7 @@ while(1):
 
     xx = points[info[contour_index][2]][0][point_index]
     yy = points[info[contour_index][2]][1][point_index]
-    #plt.plot( [ yy ],  [xx], "bo", markersize = 1)
+    plt.plot( [ yy ],  [xx], "ro", markersize = 1)
     if (point_index < info[contour_index][3]):
         if(detailInfo["contours"].get(contour_index) == None):
             detailInfo["contours"][contour_index] = {"start": point_index}
@@ -284,7 +296,17 @@ print(detailInfo["contours"])
 for key in detailInfo["contours"].keys():
     start = detailInfo["contours"][key]["start"]
     end = detailInfo["contours"][key]["end"]
-    plt.plot( points[ info[key][2] ][1][start:end+1], points[ info[key][2] ][0][start:end+1], "bo", markersize = 1)
+    if(start < 0 ):
+        xx = []
+        yy = []
+        for i in range(start, end+1):
+            xx.append( points[ info[key][2] ][0][i] )
+            yy.append( points[ info[key][2] ][1][i] )
+        plt.plot(yy, xx, "bo", markersize = 1)
+    else:
+        plt.plot( points[ info[key][2] ][1][start:end+1], points[ info[key][2] ][0][start:end+1], "bo", markersize = 1)
+
+
 
 
 
